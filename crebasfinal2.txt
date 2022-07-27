@@ -1,0 +1,201 @@
+
+
+
+/*==============================================================*/
+/* Table: CLIENTE                                               */
+/*==============================================================*/
+create table CLIENTE 
+(
+   ID_CLIENTE           INTEGER              not null,
+   NOMBRE_C             VARCHAR2(40),
+   APELLIDO_C           VARCHAR2(40),
+   CEDULA_C             VARCHAR2(10),
+   DIRECCION_C          VARCHAR2(35),
+   CORREO_C             VARCHAR2(40),
+   CUENTA_C             NUMBER,
+   constraint PK_CLIENTE primary key (ID_CLIENTE)
+);
+
+/*==============================================================*/
+/* Table: EXTRASERVICIO                                         */
+/*==============================================================*/
+create table EXTRASERVICIO 
+(
+   ID_EXTRASERVICIO     INTEGER              not null,
+   TIPO_EXS             VARCHAR2(60),
+   PAGO_EXS             NUMBER(6,2),
+   FECHA_EXS            DATE,
+   constraint PK_EXTRASERVICIO primary key (ID_EXTRASERVICIO)
+);
+
+/*==============================================================*/
+/* Table: PADRINAJE                                             */
+/*==============================================================*/
+create table PADRINAJE 
+(
+   ID_PADRINAJE         INTEGER              not null,
+   NOMBRE_P             VARCHAR2(40),
+   APELLID_P            VARCHAR2(40),
+   CEDULA_P             VARCHAR2(10),
+   TIPO_P               VARCHAR2(40),
+   ESTADO_P             VARCHAR2(15),
+   constraint PK_PADRINAJE primary key (ID_PADRINAJE)
+);
+
+/*==============================================================*/
+/* Table: PERSONAL                                              */
+/*==============================================================*/
+create table PERSONAL 
+(
+   ID_PERSONAL          INTEGER              not null,
+   ID_ROL               INTEGER,
+   APELLIDO_P           VARCHAR2(40),
+   FECHANACIMIENTO_P    DATE,
+   CORREO_P             VARCHAR2(30),
+   TELEFONO1_P          VARCHAR2(10),
+   TELEFONO2_P          VARCHAR2(10),
+   INGRESOLABORAL_P     DATE,
+   NOMBRE_P             VARCHAR2(40),
+   CEDULA_P             VARCHAR2(10),
+   constraint PK_PERSONAL primary key (ID_PERSONAL)
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_10_FK                                    */
+/*==============================================================*/
+create index RELATIONSHIP_10_FK on PERSONAL (
+   ID_ROL ASC
+);
+
+/*==============================================================*/
+/* Table: REQUISITO                                             */
+/*==============================================================*/
+create table REQUISITO 
+(
+   ID_REQUISITO         INTEGER              not null,
+   ID_SACRAMENTO        INTEGER,
+   NOMBRE_R             VARCHAR2(100),
+   constraint PK_REQUISITO primary key (ID_REQUISITO)
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_15_FK                                    */
+/*==============================================================*/
+create index RELATIONSHIP_15_FK on REQUISITO (
+   ID_SACRAMENTO ASC
+);
+
+/*==============================================================*/
+/* Table: ROL                                                   */
+/*==============================================================*/
+create table ROL 
+(
+   ID_ROL               INTEGER              not null,
+   NOMBRETIPO_ROL       VARCHAR2(40),
+   constraint PK_ROL primary key (ID_ROL)
+);
+
+/*==============================================================*/
+/* Table: SACRAMENTO                                            */
+/*==============================================================*/
+create table SACRAMENTO 
+(
+   ID_SACRAMENTO        INTEGER              not null,
+   ID_SOLICITUD         INTEGER,
+   ID_EXTRASERVICIO     INTEGER,
+   SAC_ID_SACRAMENTO    INTEGER,
+   ID_PERSONAL          INTEGER,
+   TIPO_S               VARCHAR2(30),
+   PRECIO_S             NUMBER(6,2),
+   FECHA_S              DATE,
+   constraint PK_SACRAMENTO primary key (ID_SACRAMENTO)
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_8_FK                                     */
+/*==============================================================*/
+create index RELATIONSHIP_8_FK on SACRAMENTO (
+   ID_SOLICITUD ASC
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_9_FK                                     */
+/*==============================================================*/
+create index RELATIONSHIP_9_FK on SACRAMENTO (
+   ID_EXTRASERVICIO ASC
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_12_FK                                    */
+/*==============================================================*/
+create index RELATIONSHIP_12_FK on SACRAMENTO (
+   SAC_ID_SACRAMENTO ASC
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_11_FK                                    */
+/*==============================================================*/
+create index RELATIONSHIP_11_FK on SACRAMENTO (
+   ID_PERSONAL ASC
+);
+
+/*==============================================================*/
+/* Table: SOLICITUD_DE_CLIENTE                                  */
+/*==============================================================*/
+create table SOLICITUD_DE_CLIENTE 
+(
+   ID_SOLICITUD         INTEGER              not null,
+   ID_CLIENTE           INTEGER,
+   ID_PADRINAJE         INTEGER,
+   FECHA_SC             DATE,
+   FECHA_EJECUACION_SC  DATE,
+   ESTADO_SC            VARCHAR2(50),
+   constraint PK_SOLICITUD_DE_CLIENTE primary key (ID_SOLICITUD)
+);
+
+/*==============================================================*/
+/* Index: R4_FK                                                 */
+/*==============================================================*/
+create index R4_FK on SOLICITUD_DE_CLIENTE (
+   ID_CLIENTE ASC
+);
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_13_FK                                    */
+/*==============================================================*/
+create index RELATIONSHIP_13_FK on SOLICITUD_DE_CLIENTE (
+   ID_PADRINAJE ASC
+);
+
+alter table PERSONAL
+   add constraint FK_PERSONAL_RELATIONS_ROL foreign key (ID_ROL)
+      references ROL (ID_ROL);
+
+alter table REQUISITO
+   add constraint FK_REQUISIT_RELATIONS_SACRAMEN foreign key (ID_SACRAMENTO)
+      references SACRAMENTO (ID_SACRAMENTO);
+
+alter table SACRAMENTO
+   add constraint FK_SACRAMEN_RELATIONS_PERSONAL foreign key (ID_PERSONAL)
+      references PERSONAL (ID_PERSONAL);
+
+alter table SACRAMENTO
+   add constraint FK_SACRAMEN_RELATIONS_SACRAMEN foreign key (SAC_ID_SACRAMENTO)
+      references SACRAMENTO (ID_SACRAMENTO);
+
+alter table SACRAMENTO
+   add constraint FK_SACRAMEN_RELATIONS_SOLICITU foreign key (ID_SOLICITUD)
+      references SOLICITUD_DE_CLIENTE (ID_SOLICITUD);
+
+alter table SACRAMENTO
+   add constraint FK_SACRAMEN_RELATIONS_EXTRASER foreign key (ID_EXTRASERVICIO)
+      references EXTRASERVICIO (ID_EXTRASERVICIO);
+
+alter table SOLICITUD_DE_CLIENTE
+   add constraint FK_SOLICITU_R4_CLIENTE foreign key (ID_CLIENTE)
+      references CLIENTE (ID_CLIENTE);
+
+alter table SOLICITUD_DE_CLIENTE
+   add constraint FK_SOLICITU_RELATIONS_PADRINAJ foreign key (ID_PADRINAJE)
+      references PADRINAJE (ID_PADRINAJE);
+
